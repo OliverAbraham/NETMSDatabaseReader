@@ -1,0 +1,35 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net6.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+	  <LangVersion>11.0</LangVersion>
+	  <PlatformTarget>x86</PlatformTarget>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Content Remove="C:\Users\mail\.nuget\packages\abraham.scheduler\1.0.0\contentFiles\any\net6.0\Ciridata.ico" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Abraham.ProgramSettingsManager" Version="1.0.2" />
+    <PackageReference Include="Abraham.Scheduler" Version="1.0.0" />
+    <PackageReference Include="CommandLineParser" Version="2.9.1" />
+    <PackageReference Include="FirebirdSql.Data.FirebirdClient" Version="9.0.2" />
+    <PackageReference Include="NLog" Version="5.0.4" />
+    <PackageReference Include="NLog.Extensions.Logging" Version="5.0.4" />
+    <PackageReference Include="NLog.Web.AspNetCore" Version="5.1.4" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="appsettings.hjson">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="NLog.config">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
+</Project>

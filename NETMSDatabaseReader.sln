@@ -1,0 +1,43 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.4.32916.344
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NETMSDatabaseReader", "NETMSDatabaseReader\NETMSDatabaseReader.csproj", "{3CD19774-825E-4E1B-9AAB-533F146AD69F}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "FirebirdEmbeddedDB", "FirebirdEmbeddedDB", "{8A1532B5-607B-44B7-A3D7-45BE2ABC16A8}"
+	ProjectSection(SolutionItems) = preProject
+		FirebirdEmbeddedDB\aliases.conf = FirebirdEmbeddedDB\aliases.conf
+		FirebirdEmbeddedDB\fbembed.dll = FirebirdEmbeddedDB\fbembed.dll
+		FirebirdEmbeddedDB\firebird.conf = FirebirdEmbeddedDB\firebird.conf
+		FirebirdEmbeddedDB\firebird.msg = FirebirdEmbeddedDB\firebird.msg
+		FirebirdEmbeddedDB\ib_util.dll = FirebirdEmbeddedDB\ib_util.dll
+		FirebirdEmbeddedDB\icudt30.dll = FirebirdEmbeddedDB\icudt30.dll
+		FirebirdEmbeddedDB\icuin30.dll = FirebirdEmbeddedDB\icuin30.dll
+		FirebirdEmbeddedDB\icuuc30.dll = FirebirdEmbeddedDB\icuuc30.dll
+		FirebirdEmbeddedDB\IDPLicense.txt = FirebirdEmbeddedDB\IDPLicense.txt
+		FirebirdEmbeddedDB\IPLicense.txt = FirebirdEmbeddedDB\IPLicense.txt
+		FirebirdEmbeddedDB\Microsoft.VC80.CRT.manifest = FirebirdEmbeddedDB\Microsoft.VC80.CRT.manifest
+		FirebirdEmbeddedDB\msvcp80.dll = FirebirdEmbeddedDB\msvcp80.dll
+		FirebirdEmbeddedDB\msvcr80.dll = FirebirdEmbeddedDB\msvcr80.dll
+		FirebirdEmbeddedDB\Readme.txt = FirebirdEmbeddedDB\Readme.txt
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{3CD19774-825E-4E1B-9AAB-533F146AD69F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3CD19774-825E-4E1B-9AAB-533F146AD69F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3CD19774-825E-4E1B-9AAB-533F146AD69F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3CD19774-825E-4E1B-9AAB-533F146AD69F}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {87F522ED-6105-4E49-BC25-A53DE6392F3A}
+	EndGlobalSection
+EndGlobal

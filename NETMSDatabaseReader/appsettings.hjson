@@ -1,0 +1,7 @@
+﻿{
+    FirebirdEmbeddedDB              : "C:\\GIT\\NETMSDatabaseReader\\FirebirdEmbeddedDB\\fbembed.dll",
+    SolarSystemDatabase             : "C:\\NETMS_MicroInverter\\SysData\\NETSYSTEM.FDB",
+    SolarProductionDatabase         : "C:\\NETMS_MicroInverter\\SysData\\NETDETAIL.FDB",
+    CopyFdbFilesBeforeReading       : true,
+    ReadIntervalMinutes             : 5,
+}

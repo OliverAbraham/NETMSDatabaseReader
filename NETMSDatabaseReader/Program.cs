@@ -2,6 +2,7 @@
 using Abraham.Scheduler;
 using CommandLine;
 using FirebirdSql.Data.FirebirdClient;
+using Newtonsoft.Json;
 using NLog.Web;
 using System.Text;
 
@@ -26,16 +27,13 @@ namespace NETMSDatabaseReader
     /// </summary>
     public class Program
     {
-        public const string VERSION = "2022-10-09";
-
         #region ------------- Fields --------------------------------------------------------------
         private static CommandLineOptions _commandLineOptions;
         private static ProgramSettingsManager<Configuration> _programSettingsManager;
         private static Configuration _config;
         private static NLog.Logger _logger;
         private static Scheduler _scheduler;
-        private static DateTime _totalPowerLastRowTimestamp     = new DateTime();
-        private static DateTime _detailsHistoryLastRowTimestamp = new DateTime();
+        private static DynamicData _dynamicData = new();
         #endregion
 
 
@@ -72,8 +70,9 @@ namespace NETMSDatabaseReader
             PrintGreeting();
             LogConfiguration();
             HealthChecks();
+            ReadDynamicData();
             
-            ReadSystemData();
+            ReadNetmsSolarSystemData();
             
             StartScheduler();
             Console.ReadKey();
@@ -125,6 +124,39 @@ namespace NETMSDatabaseReader
 
 
 
+        #region ------------- Dynamic data --------------------------------------------------------
+        private static void ReadDynamicData()
+        {
+            try
+            {
+                if (File.Exists("DynamicData.json"))
+                {
+                    var contents = File.ReadAllText("DynamicData.json");
+                    _dynamicData = JsonConvert.DeserializeObject<DynamicData>(contents) ?? new();
+                }
+            }
+            catch (Exception ex) 
+            {
+                Console.WriteLine($"Error reading DynamicData.json: {ex}");
+            }
+        }
+
+        private static void SaveDynamicData()
+        {
+            try
+            {
+                var contents = JsonConvert.SerializeObject(_dynamicData);
+                File.WriteAllText("DynamicData.json", contents);
+            }
+            catch (Exception ex) 
+            {
+                Console.WriteLine($"Error saving DynamicData.json: {ex}");
+            }
+        }
+        #endregion
+
+
+
         #region ------------- Logging -------------------------------------------------------------
         private static void InitLogger()
         {
@@ -147,18 +179,18 @@ namespace NETMSDatabaseReader
             _logger.Debug("");
             _logger.Debug("");
             _logger.Debug("");
-            _logger.Debug(@"-----------------------------------------------------------------------------------------");
-            _logger.Debug(@"   __  __          _____                      _                             			 ");
-            _logger.Debug(@"  |  \/  |        / ____|                    | |          /\                			 ");
-            _logger.Debug(@"  | \  / |_   _  | |     ___  _ __  ___  ___ | | ___     /  \   _ __  _ __  			 ");
-            _logger.Debug(@"  | |\/| | | | | | |    / _ \| '_ \/ __|/ _ \| |/ _ \   / /\ \ | '_ \| '_ \ 			 ");
-            _logger.Debug(@"  | |  | | |_| | | |___| (_) | | | \__ \ (_) | |  __/  / ____ \| |_) | |_) |			 ");
-            _logger.Debug(@"  |_|  |_|\__, |  \_____\___/|_| |_|___/\___/|_|\___| /_/    \_\ .__/| .__/ 			 ");
-            _logger.Debug(@"           __/ |                                               | |   | |    			 ");
-            _logger.Debug(@"          |___/                                                |_|   |_|    			 ");
-            _logger.Debug(@"                                                                                       	 ");
-            _logger.Info($"MyConsoleApp started, Version {VERSION}                                                  ");
-            _logger.Debug(@"-----------------------------------------------------------------------------------------");
+            _logger.Debug(@"-------------------------------------------------------------------------------------------------------------------");
+            _logger.Debug(@"                                                                                                                   ");
+            _logger.Debug(@" _   _ ______ _______ __  __  _____ _____        _        _                    _____                _              ");
+            _logger.Debug(@"| \ | |  ____|__   __|  \/  |/ ____|  __ \      | |      | |                  |  __ \              | |             ");
+            _logger.Debug(@"|  \| | |__     | |  | \  / | (___ | |  | | __ _| |_ __ _| |__   __ _ ___  ___| |__) |___  __ _  __| | ___ _ __    ");
+            _logger.Debug(@"| . ` |  __|    | |  | |\/| |\___ \| |  | |/ _` | __/ _` | '_ \ / _` / __|/ _ \  _  // _ \/ _` |/ _` |/ _ \ '__|   ");
+            _logger.Debug(@"| |\  | |____   | |  | |  | |____) | |__| | (_| | || (_| | |_) | (_| \__ \  __/ | \ \  __/ (_| | (_| |  __/ |      ");
+            _logger.Debug(@"|_| \_|______|  |_|  |_|  |_|_____/|_____/ \__,_|\__\__,_|_.__/ \__,_|___/\___|_|  \_\___|\__,_|\__,_|\___|_|      ");
+            _logger.Debug(@"                                                                                                                   ");
+            _logger.Debug(@"                                                                                                                   ");
+            _logger.Info($"NETMSDatabaseReader started, Version {AppVersion.Version.VERSION}                                                   ");
+            _logger.Debug(@"-------------------------------------------------------------------------------------------------------------------");
         }
 
         private static void LogConfiguration()
@@ -205,7 +237,7 @@ namespace NETMSDatabaseReader
 
 
         #region ------------- Domain logic --------------------------------------------------------
-        private static void ReadSystemData()
+        private static void ReadNetmsSolarSystemData()
         {
             try
             {
@@ -254,7 +286,9 @@ namespace NETMSDatabaseReader
                         ReadTableContents(_config.SolarProductionDatabase, tableName);
                     _logger.Debug("");
                 }
+                SaveDynamicData();
 
+                Console.WriteLine("Press any key to end the program.");
             }
             catch (Exception ex)
             {
@@ -427,7 +461,7 @@ namespace NETMSDatabaseReader
             ConnectToFirebirdDatabaseAndExecuteCommand(databaseFile,
                 delegate(FbConnection connection, FbTransaction transaction)
                 {
-                    var query = $"select * from TOTALPOWER where MIDATE > '{_totalPowerLastRowTimestamp.ToString("dd.MM.yyyy HH:mm:ss")}' order by MIDATE";
+                    var query = $"select * from TOTALPOWER where MIDATE > '{_dynamicData.TotalPowerLastRowTimestamp.ToString("dd.MM.yyyy HH:mm:ss")}' order by MIDATE";
                     _logger.Debug(query);
                     using (var command = new FbCommand(query, connection, transaction))
                     {
@@ -448,7 +482,7 @@ namespace NETMSDatabaseReader
 
                                 var midateColumnIndex = columns.IndexOf("MIDATE");
                                 var midate = values[midateColumnIndex];
-                                _totalPowerLastRowTimestamp = Convert.ToDateTime(midate);
+                                _dynamicData.TotalPowerLastRowTimestamp = Convert.ToDateTime(midate);
                             }
                         }
                     }
@@ -483,7 +517,7 @@ namespace NETMSDatabaseReader
             ConnectToFirebirdDatabaseAndExecuteCommand(databaseFile,
                 delegate(FbConnection connection, FbTransaction transaction)
                 {
-                    var query = $"select * from DETAILHISTORY where MIDATE > '{_detailsHistoryLastRowTimestamp.ToString("dd.MM.yyyy HH:mm:ss")}' order by MIDATE";
+                    var query = $"select * from DETAILHISTORY where MIDATE > '{_dynamicData.DetailsHistoryLastRowTimestamp.ToString("dd.MM.yyyy HH:mm:ss")}' order by MIDATE";
                     _logger.Debug(query);
                     using (var command = new FbCommand(query, connection, transaction))
                     {
@@ -504,7 +538,7 @@ namespace NETMSDatabaseReader
 
                                 var midateColumnIndex = columns.IndexOf("MIDATE");
                                 var midate = values[midateColumnIndex];
-                                _detailsHistoryLastRowTimestamp = Convert.ToDateTime(midate);
+                                _dynamicData.DetailsHistoryLastRowTimestamp = Convert.ToDateTime(midate);
                             }
                         }
                     }
@@ -559,7 +593,7 @@ namespace NETMSDatabaseReader
             for (int colIndex = 0; colIndex < values.Count(); colIndex++)
             {
                 var value = values[colIndex];
-                var valueStr = (value is not null) ? (value.ToString().Trim()) : "";
+                var valueStr = (value is not null) ? (value?.ToString()?.Trim() ?? "") : "";
                 valueStr = valueStr.PadRight(width).Substring(0,width);
                 sb.Append($"{valueStr} ");
             }

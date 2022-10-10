@@ -4,4 +4,9 @@
     SolarProductionDatabase         : "C:\\NETMS_MicroInverter\\SysData\\NETDETAIL.FDB",
     CopyFdbFilesBeforeReading       : true,
     ReadIntervalMinutes             : 5,
+    TotalkWhOffset                  : 0.2,
+    HomeAutomationServerURL         : "http://192.168.0.4:5001",
+    HomeAutomationUsername          : "espclient",
+    HomeAutomationPassword          : "changeme",
+    HomeAutomationTimeout           : 30,
 }

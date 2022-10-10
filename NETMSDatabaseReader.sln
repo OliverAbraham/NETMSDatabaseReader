@@ -23,6 +23,12 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "FirebirdEmbeddedDB", "Fireb
 		FirebirdEmbeddedDB\Readme.txt = FirebirdEmbeddedDB\Readme.txt
 	EndProjectSection
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HomenetBase", "HomenetBase\HomenetBase.csproj", "{D2DF8C14-8A75-41B1-ADE3-B9F6C26CC0BE}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HomenetClient", "HomenetClient\HomenetClient.csproj", "{137EBB09-5193-4360-9D9C-54DB7D7FE671}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Abraham.DateTime", "Abraham.DateTime\Abraham.DateTime.csproj", "{BD7244EC-937C-4AE2-A7C7-1E3E6545D001}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -33,6 +39,18 @@ Global
 		{3CD19774-825E-4E1B-9AAB-533F146AD69F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3CD19774-825E-4E1B-9AAB-533F146AD69F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3CD19774-825E-4E1B-9AAB-533F146AD69F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D2DF8C14-8A75-41B1-ADE3-B9F6C26CC0BE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D2DF8C14-8A75-41B1-ADE3-B9F6C26CC0BE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D2DF8C14-8A75-41B1-ADE3-B9F6C26CC0BE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D2DF8C14-8A75-41B1-ADE3-B9F6C26CC0BE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{137EBB09-5193-4360-9D9C-54DB7D7FE671}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{137EBB09-5193-4360-9D9C-54DB7D7FE671}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{137EBB09-5193-4360-9D9C-54DB7D7FE671}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{137EBB09-5193-4360-9D9C-54DB7D7FE671}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BD7244EC-937C-4AE2-A7C7-1E3E6545D001}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BD7244EC-937C-4AE2-A7C7-1E3E6545D001}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BD7244EC-937C-4AE2-A7C7-1E3E6545D001}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BD7244EC-937C-4AE2-A7C7-1E3E6545D001}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

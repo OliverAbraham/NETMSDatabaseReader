@@ -24,6 +24,11 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\HomenetBase\HomenetBase.csproj" />
+    <ProjectReference Include="..\HomenetClient\HomenetClient.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
     <None Update="appsettings.hjson">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

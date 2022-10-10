@@ -2,7 +2,10 @@
 using Abraham.Scheduler;
 using CommandLine;
 using FirebirdSql.Data.FirebirdClient;
+using HomenetBase;
+using HomenetClient;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using NLog.Web;
 using System.Text;
 
@@ -28,12 +31,15 @@ namespace NETMSDatabaseReader
     public class Program
     {
         #region ------------- Fields --------------------------------------------------------------
-        private static CommandLineOptions _commandLineOptions;
-        private static ProgramSettingsManager<Configuration> _programSettingsManager;
-        private static Configuration _config;
+        private static CommandLineOptions _commandLineOptions = new();
+        private static ProgramSettingsManager<Configuration> _programSettingsManager = new();
+        private static Configuration _config = new();
         private static NLog.Logger _logger;
-        private static Scheduler _scheduler;
+        private static Scheduler _scheduler = new();
         private static DynamicData _dynamicData = new();
+        private static string? _dynamicDataPowerCurrentWatts;
+        private static string? _dynamicDataPowerKwhToday;
+        private static string? _dynamicDataPowerKwhAll;
         #endregion
 
 
@@ -286,7 +292,19 @@ namespace NETMSDatabaseReader
                         ReadTableContents(_config.SolarProductionDatabase, tableName);
                     _logger.Debug("");
                 }
+
+                var today     = DateTime.Now.Date;
+                var yesterday = DateTime.Now.Date.AddDays(-1);
+                var earnedUpToToday     = ReadKwhEarnedOfDate(_config.SolarProductionDatabase, today);
+                var earnedUpToYesterday = ReadKwhEarnedOfDate(_config.SolarProductionDatabase, yesterday);
+                var difference = earnedUpToToday - earnedUpToYesterday;
+                _dynamicDataPowerKwhToday = difference.ToString();
+
+                var earnedTotal = earnedUpToToday - _config.TotalkWhOffset;
+                _dynamicDataPowerKwhAll = earnedTotal.ToString();
+
                 SaveDynamicData();
+                SendSolarDataToHomenetServer();
 
                 Console.WriteLine("Press any key to end the program.");
             }
@@ -491,6 +509,33 @@ namespace NETMSDatabaseReader
             return lastTimeRead;
         }
 
+        private static decimal ReadKwhEarnedOfDate(string databaseFile, DateTime date)
+        {
+            var from = new DateTime(date.Year, date.Month, date.Day, 0, 0, 0).ToString("dd.MM.yyyy HH:mm:ss");
+            var to = new DateTime(date.Year, date.Month, date.Day, 23, 59, 59).ToString("dd.MM.yyyy HH:mm:ss");
+
+            var query = $"select MAX(MIPOWERKWHALL) from TOTALPOWER where MIDATE between '{from}' and '{to}'";
+            object value = ExecuteSkalarSql(databaseFile, query);
+            return Convert.ToDecimal(value);
+        }
+
+        private static object ExecuteSkalarSql(string databaseFile, string query)
+        {
+            object value = null;
+
+            ConnectToFirebirdDatabaseAndExecuteCommand(databaseFile,
+                delegate (FbConnection connection, FbTransaction transaction)
+                {
+                    _logger.Debug(query);
+                    using (var command = new FbCommand(query, connection, transaction))
+                    {
+                        value = command.ExecuteScalar();
+                    }
+                });
+
+            return value;
+        }
+
         private static void ReadDetailHistory(string databaseFile)
         {
             var columns = new List<string>()
@@ -539,6 +584,10 @@ namespace NETMSDatabaseReader
                                 var midateColumnIndex = columns.IndexOf("MIDATE");
                                 var midate = values[midateColumnIndex];
                                 _dynamicData.DetailsHistoryLastRowTimestamp = Convert.ToDateTime(midate);
+
+                                midateColumnIndex = columns.IndexOf("MIPOWERFIVE");
+                                var powerCurrentWatts = values[midateColumnIndex];
+                                _dynamicDataPowerCurrentWatts = powerCurrentWatts.ToString();
                             }
                         }
                     }
@@ -599,7 +648,52 @@ namespace NETMSDatabaseReader
             }
             return sb.ToString();
         }
-
         #endregion
+
+
+
+        #region ------------- Homeautomation Gateway ----------------------------------------------
+        private static void SendSolarDataToHomenetServer()
+        {
+            if (string.IsNullOrWhiteSpace(_config?.HomeAutomationServerURL))
+                return;
+            if (_dynamicDataPowerCurrentWatts is null && 
+                _dynamicDataPowerKwhToday     is null && 
+                _dynamicDataPowerKwhAll       is null)
+                return;
+
+            try
+            {
+                _logger.Debug($"Sending solar data to home automation server: currentPower={_dynamicDataPowerCurrentWatts} todayKwh={_dynamicDataPowerKwhToday} totalKwh={_dynamicDataPowerKwhAll}");
+
+                var connector = new DataObjectsConnector(
+                    _config.HomeAutomationServerURL,
+                    _config.HomeAutomationUsername,
+                    _config.HomeAutomationPassword,
+                    _config.HomeAutomationTimeout);
+                _logger.Debug("Connect successful");
+
+                UpdateDataObject(connector, "SOLAR_CURRENT_WATTS", _dynamicDataPowerCurrentWatts);
+                UpdateDataObject(connector, "SOLAR_TODAY_KWH"    , _dynamicDataPowerKwhToday    );
+                UpdateDataObject(connector, "SOLAR_TOTAL_KWH"    , _dynamicDataPowerKwhAll      );
+            }
+            catch (Exception ex)
+            {
+                _logger.Debug("Error connecting to homenet server:\n" + ex.ToString());
+            }
+        }
+
+        private static void UpdateDataObject(DataObjectsConnector connector, string name, string value)
+        {
+            if (value is not null)
+            {
+                _logger.Debug($"updating {name} with value {value}");
+                var success = connector.UpdateValueOnly(new DataObject() { Name = name, Value = value });
+                _logger.Debug(success ? "ok" : "send error!");
+            }
+        }
+        #endregion
+
+
     }
 }

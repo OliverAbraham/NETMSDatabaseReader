@@ -4,6 +4,8 @@ using CommandLine;
 using FirebirdSql.Data.FirebirdClient;
 using HomenetBase;
 using HomenetClient;
+using MQTTnet;
+using MQTTnet.Client;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using NLog.Web;
@@ -681,19 +683,72 @@ namespace NETMSDatabaseReader
             {
                 _logger.Debug("Error connecting to homenet server:\n" + ex.ToString());
             }
+
+            try
+            {
+                UpdateMqttTopics_internal(_dynamicDataPowerCurrentWatts, _dynamicDataPowerKwhToday, _dynamicDataPowerKwhAll).GetAwaiter().GetResult();
+            }
+            catch (Exception ex)
+            {
+                _logger.Debug("Error connecting to MQTT server:\n" + ex.ToString());
+            }
         }
 
+        #region Homenet server
         private static void UpdateDataObject(DataObjectsConnector connector, string name, string value)
         {
             if (value is not null)
             {
                 _logger.Debug($"updating {name} with value {value}");
                 var success = connector.UpdateValueOnly(new DataObject() { Name = name, Value = value });
-                _logger.Debug(success ? "ok" : "send error!");
+                if (!success)
+                    _logger.Debug("send error!");
             }
         }
         #endregion
 
+        #region MQTT
+        public static async Task UpdateMqttTopics_internal(string current, string today, string total)
+        {
+            /*
+             * This sample creates a simple MQTT client and connects to a public broker.
+             *
+             * Always dispose the client when it is no longer used.
+             * The default version of MQTT is 3.1.1.
+             */
 
+            var mqttFactory = new MqttFactory();
+
+            using (var mqttClient = mqttFactory.CreateMqttClient())
+            {
+                var mqttClientOptions = new MqttClientOptionsBuilder()
+                    .WithTcpServer(_config.MQTTServerURL)
+                    .WithCredentials(_config.MQTTUsername, _config.MQTTPassword)
+                    .Build();
+
+                // This will throw an exception if the server is not available.
+                // The result from this message returns additional data which was sent 
+                // from the server. Please refer to the MQTT protocol specification for details.
+                var response = await mqttClient.ConnectAsync(mqttClientOptions, CancellationToken.None);
+
+                await Publish(mqttClient, "current", current);
+                await Publish(mqttClient, "today"  , today);
+                await Publish(mqttClient, "total"  , total);
+
+                await mqttClient.DisconnectAsync(mqttFactory.CreateClientDisconnectOptionsBuilder().Build(), CancellationToken.None);
+            }
+        }
+
+        private static async Task Publish(IMqttClient mqttClient, string subtopic, string value)
+        {
+            if (!string.IsNullOrWhiteSpace(_config.MQTTTopic))
+            {
+                var topic = _config.MQTTTopic + subtopic;
+                await mqttClient.PublishAsync(new MqttApplicationMessageBuilder().WithTopic(topic).WithPayload(value).Build(), CancellationToken.None);
+                _logger.Debug($"Published {topic} = {value}");
+            }
+        }
+        #endregion
+        #endregion
     }
 }

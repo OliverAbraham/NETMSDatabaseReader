@@ -6,7 +6,12 @@
     ReadIntervalMinutes             : 5,
     TotalkWhOffset                  : 0.2,
     HomeAutomationServerURL         : "http://192.168.0.4:5001",
-    HomeAutomationUsername          : "espclient",
+    HomeAutomationUsername          : "changeme",
     HomeAutomationPassword          : "changeme",
     HomeAutomationTimeout           : 30,
+    MQTTServerURL                   : "192.168.0.6",
+    MQTTUsername                    : "changeme",
+    MQTTPassword                    : "changeme",
+    MQTTTopic                       : "solar/",
+    MQTTTimeout                     : 30
 }

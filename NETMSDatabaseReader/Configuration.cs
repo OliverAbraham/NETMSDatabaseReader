@@ -14,6 +14,11 @@ namespace NETMSDatabaseReader
         public string  HomeAutomationUsername    { get; set; } = ""; // Optional data to connect to my home automation system
         public string  HomeAutomationPassword    { get; set; } = ""; // Optional data to connect to my home automation system
         public int     HomeAutomationTimeout     { get; set; } = 30; // Optional data to connect to my home automation system
+        public string  MQTTServerURL             { get; set; } = "";
+        public string  MQTTUsername              { get; set; } = "";
+        public string  MQTTPassword              { get; set; } = "";
+        public string  MQTTTopic                 { get; set; } = "";
+        public int     MQTTTimeout               { get; set; } = 30;
 
         public void LogOptions(ILogger logger)
         {
@@ -28,6 +33,11 @@ namespace NETMSDatabaseReader
             logger.Debug($"HomeAutomationUsername         : {HomeAutomationUsername   }");
             logger.Debug($"HomeAutomationPassword         : {HomeAutomationPassword   }");
             logger.Debug($"HomeAutomationTimeout          : {HomeAutomationTimeout    }");
+            logger.Debug($"MQTTServerURL                  : {MQTTServerURL            }");
+            logger.Debug($"MQTTUsername                   : {MQTTUsername             }");
+            logger.Debug($"MQTTPassword                   : {MQTTPassword             }");
+            logger.Debug($"MQTTTopic                      : {MQTTTopic                }");
+            logger.Debug($"MQTTTimeout                    : {MQTTTimeout              }");
         }
     }
 }

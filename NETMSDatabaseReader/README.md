@@ -1,5 +1,8 @@
 ﻿# NETMS Database Reader
 
+![](https://img.shields.io/github/downloads/oliverabraham/NETMSDatabaseReader/total) ![](https://img.shields.io/github/license/oliverabraham/NETMSDatabaseReader) ![](https://img.shields.io/github/languages/count/oliverabraham/NETMSDatabaseReader) ![GitHub Repo stars](https://img.shields.io/github/stars/oliverabraham/NETMSDatabaseReader?label=repo%20stars) ![GitHub Repo stars](https://img.shields.io/github/stars/oliverabraham?label=user%20stars)
+
+
 ## OVERVIEW
 
 NETMS Database Reader to read out dynamic data of the allofsolar NETMS 6.2 solar monitoring system.
@@ -71,4 +74,12 @@ https://www.apache.org/licenses/LICENSE-2.0
 ## AUTHOR
 
 Oliver Abraham, mail@oliver-abraham.de
+
+
+# MAKE A DONATION !
+
+If you find this application useful, buy me a coffee!
+I would appreciate a small donation on https://www.buymeacoffee.com/oliverabraham
+
+<a href="https://www.buymeacoffee.com/app/oliverabraham" target="_blank"><img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" alt="Buy Me A Coffee" style="height: 60px !important;width: 217px !important;" ></a>
 

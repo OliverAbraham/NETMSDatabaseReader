@@ -744,7 +744,7 @@ namespace NETMSDatabaseReader
             if (!string.IsNullOrWhiteSpace(_config.MQTTTopic))
             {
                 var topic = _config.MQTTTopic + subtopic;
-                await mqttClient.PublishAsync(new MqttApplicationMessageBuilder().WithTopic(topic).WithPayload(value).Build(), CancellationToken.None);
+                await mqttClient.PublishAsync(new MqttApplicationMessageBuilder().WithTopic(topic).WithPayload(value).WithRetainFlag().Build(), CancellationToken.None);
                 _logger.Debug($"Published {topic} = {value}");
             }
         }
